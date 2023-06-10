@@ -81,6 +81,7 @@
                     <td></td>
                   </tr>
                   {{-- <tr>
+					
                     <td><i class="fa fa-file-powerpoint-o"></i></td>
                     <td>EVAMs presentation</td>
                     <td>This is presentation for the EVAM occuring later this month</td>
