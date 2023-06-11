@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('parkirs', function (Blueprint $table) {
             $table->id();
-            $table->string('plat_nomor');
+            $table->string('plat_nomor')->unique();
             $table->unsignedBigInteger('id_jenis_kendaraan');
-            $table->foreign('id_jenis_kendaraan')->references('id')->on('jenis_kendaraans');
+            $table->foreign('id_jenis_kendaraan')->references('id')->on('jenis__kendaraans');
             $table->unsignedBigInteger('id_admin');
             $table->foreign('id_admin')->references('id')->on('admins');
             $table->timestamps();

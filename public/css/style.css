@@ -1,3 +1,26 @@
+.modal {
+  display: none; /* Modal disembunyikan secara default */
+  position: fixed; /* Menempatkan modal di atas konten */
+  z-index: 9999; /* Menetapkan urutan tampilan */
+  left: 0;
+  top: 0;
+  width: 100%; /* Lebar modal */
+  height: 100%; /* Tinggi modal */
+  overflow: auto; /* Memberikan scroll jika konten terlalu panjang */
+  background-color: rgba(0, 0, 0, 0.4); /* Warna latar belakang dengan transparansi */
+}
+
+/* Gaya untuk konten modal */
+.modal-content {
+  z-index: 110; /* Menetapkan urutan tampilan */
+
+  background-color: #fefefe;
+  margin: 15% auto; /* Jarak dari atas dan bawah */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Lebar konten modal */
+}
+
 .rotate-180-deg {
     transform: rotate(180deg);
   }
@@ -139,6 +162,7 @@
   }
   
   #wrapper {
+    z-index: 1;
     height: 100%;
     padding-left: 0;
   }

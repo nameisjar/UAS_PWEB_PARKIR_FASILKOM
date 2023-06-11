@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/', function () {
-    return view('dashboard');
-});
+// Route::get('/', function () {
+//     return view('dashboard');
+// });
+
+Route::get('/', [App\Http\Controllers\ParkirController::class,'showTambahParkir']) ->name('showTambahParkir');
+Route::post('/', [App\Http\Controllers\ParkirController::class,'tambahParkir']) ->name('tambahParkir');
+

@@ -21,20 +21,17 @@
 					<span class='icon-bar'></span>
 					<span class='icon-bar'></span>
 				</button>
-				<a class='navbar-brand' >Responsive Demo</a>
+				<a class='navbar-brand' >Parkir Fasilkom</a>
 			</div>
 
 			<div class='collapse navbar-collapse navbar-hamburger-delicious'>
 				<ul class='nav navbar-nav side-nav fadeInLeft'>
 					<li class='toggle-nav visible-lg visible-md visible-sm'><a><i class='fa fa-lg fa-arrow-left'></i>Hide Menu</a></li>
 					{{-- <li class='dashboard'><a href='#'><i class='fa fa-lg fa-dashboard'></i>Dash</a></li> --}}
-					<li class='active docs'><a href='#docs'><i class='fa fa-lg fa-folder-open'></i>Docs</a></li>
+					<li class='active docs'><a href='#docs'><i class='fa fa-lg fa-folder-open'></i>Data Parkir</a></li>
 					<li class='admin'><a href='#admin'><i class='fa fa-lg fa-user'></i>Admin</a></li>
 					<li class='divider'><hr></li>
-					{{-- <li class='person-lookup'><a href='#personLookup'><i class='fa fa-lg fa-phone-square'></i>Person Lookup</a></li>
-					<li class='software-support'><a href='#softwareSupport'><i class='fa fa-lg fa-question-circle'></i>Support</a></li>
-					<li class='dashboard-updates'><a href='#dashboardUpdates'><i class='fa fa-lg fa-arrow-up'></i>Updates</a></li>
-					<li class='print'><a><i class='fa fa-lg fa-print'></i>Print</a></li> --}}
+
 				</ul>
 				<ul class='nav navbar-nav navbar-right navbar-user'>
 					<li class='dropdown user-dropdown'>
@@ -53,52 +50,52 @@
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-lg-12 col-md-12 col-sm-12">
-						<h2>Documents</h2>
+						<h2>Data Parkir</h2>
             <hr />
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-lg-12 col-md-12 col-xs-12 js-content">
             <div class="docs-table">
-              <table data-toggle="table" data-show-toggle="true" data-show-columns="true" data-search="true" data-striped="true">
-                <thead>
-                  <tr>
-                    <th data-field="Type">Type</th>
-                    <th data-field="Name">Name</th>
-                    <th data-field="Description">Description</th>
-                    <th data-field="Tags">Tags</th>
-                    <th data-field="LastViewed">Last Viewed</th>
-                    <th data-field="Expiration">Expiration</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><i class="fa fa-file-excel-o"></i></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                  {{-- <tr>
-					
-                    <td><i class="fa fa-file-powerpoint-o"></i></td>
-                    <td>EVAMs presentation</td>
-                    <td>This is presentation for the EVAM occuring later this month</td>
-                    <td>EVAM</td>
-                    <td>a day ago</td>
-                    <td>Sep 13, 2015</td>
-                  </tr>
-                  <tr>
-                    <td><i class="fa fa-file-word-o"></i></td>
-                    <td>Xmas Party list</td>
-                    <td>List of all the people who will be attending the holiday party</td>
-                    <td>list</td>
-                    <td>a few mins ago</td>
-                    <td>Dec 25, 2015</td>
-                  </tr> --}}
-                </tbody>
-              </table>
+				<button id="tombolTambah">Tambah</button>
+
+				@if(session('success'))
+				<div class="alert alert-success">
+					{{ session('success') }}
+				</div>
+				@endif
+				
+				<!-- Tampilan Pesan Error -->
+				@if(session('error'))
+				<div class="alert alert-danger">
+					{{ session('error') }}
+				</div>
+				@endif
+				
+				<table data-toggle="table" data-show-toggle="true" data-show-columns="true" data-search="true" data-striped="true">
+					<thead>
+						<tr>
+							<th data-field="Type">Plat Nomor</th>
+							<th data-field="Name">Jenis Kendaraan</th>
+							<th data-field="Description">Admin</th>
+							<th data-field="">Waktu Masuk</th>
+							<th data-field="aksi">Aksi</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach ($parkir as $item)
+							<tr>
+								<td>{{ $item->plat_nomor }}</td>
+								<td>{{ $item->jenis_kendaraan->jenis }}</td>
+								<td>{{ $item->admin->nama }}</td>
+								<td>{{ $item->created_at->setTimezone('Asia/Jakarta')->format('d-m-Y H:i:s') }} WIB</td>
+
+
+							</tr>
+						@endforeach
+					</tbody>
+				</table>
+				
             </div>
 					</div>
 				</div>
@@ -108,7 +105,55 @@
 
 	</div>
 </body>
+
+<div id="modalTambah" class="modal">
+	<div class="modal-content">
+	  <span class="close">&times;</span>
+	  <form action="{{ route('tambahParkir') }}" method="POST">
+		@csrf
+		<!-- Tambahkan elemen input atau field form yang diinginkan -->
+		<label for="plat_nomor">Plat Nomor:</label>
+		<input type="text" id="plat_nomor" name="plat_nomor" required><br><br>
+
+		<label for="jenis_kendaraan">Jenis Kendaraan:</label>
+		<select id="jenis_kendaraan" name="jenis_kendaraan" required>
+			<option disabled value>Pilih Jenis Kendaraan</option>
+			@foreach ($jenis_kendaraan as $item)
+			<option value="{{ $item->id }}">{{ $item->jenis }}</option>		
+			@endforeach
+
+		</select><br><br>
+
+		<input type="submit" value="Simpan">
+	  </form>
+	</div>
+  </div>
 <!-- partial -->
+<script>
+
+    var tombolTambah = document.getElementById("tombolTambah");
+    var modal = document.getElementById("modalTambah");
+    var formElement = document.getElementById("formElement");
+    var closeButton = document.getElementsByClassName("close")[0];
+
+    // Saat tombol "Tambah" ditekan, tampilkan modal
+    tombolTambah.onclick = function() {
+      modal.style.display = "block";
+    }
+
+	formElement.action = "{{ route('tambahParkir') }}"
+
+    // Saat tombol "Tutup" atau area di luar modal ditekan, sembunyikan modal
+    closeButton.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/4579/bootstrap.min.js'></script>
 <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/4579/bootstrap-table.js'></script><script  src="{{ asset('js/script.js') }}"></script>
