@@ -11,7 +11,138 @@
     <link rel='stylesheet' href='https://s3-us-west-2.amazonaws.com/s.cdpn.io/4579/bootstrap-table.css'>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fungsi untuk memperbarui data sisa parkir
+            function updateSisaParkir() {
+                $.ajax({
+                    url: "{{ route('getSisaParkir') }}",
+                    type: 'GET',
+                    success: function(response) {
+                        // Update elemen HTML dengan data sisa parkir yang diperbarui
+                        $("#sisaParkirMotor").text(response.sisaParkirMotor);
+                        $("#sisaParkirMobil").text(response.sisaParkirMobil);
 
+                        // Simpan data sisa parkir ke sessionStorage
+                        sessionStorage.setItem('sisaParkirMotor', response.sisaParkirMotor);
+                        sessionStorage.setItem('sisaParkirMobil', response.sisaParkirMobil);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            // Panggil fungsi updateSisaParkir saat halaman pertama kali dimuat
+            updateSisaParkir();
+
+            // Panggil fungsi updateSisaParkir secara periodik setiap 5 detik
+            setInterval(updateSisaParkir, 5000);
+
+            // Ambil data sisa parkir dari sessionStorage saat halaman direfresh
+            if (sessionStorage.getItem('sisaParkirMotor') !== null) {
+                $("#sisaParkirMotor").text(sessionStorage.getItem('sisaParkirMotor'));
+            }
+            if (sessionStorage.getItem('sisaParkirMobil') !== null) {
+                $("#sisaParkirMobil").text(sessionStorage.getItem('sisaParkirMobil'));
+            }
+        });
+    </script>
+
+
+    <style>
+        .modal-content {
+            max-width: 400px;
+            /* Atur lebar maksimal */
+            margin: 30 auto;
+            /* Pusatkan di tengah */
+            padding: 20px;
+            background-color: #f1f1f1;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .yes-button,
+        .no-button {
+            padding: 15px 30px;
+            font-size: 14px;
+            border-radius: 15px;
+            margin: 0 50px;
+            /* Tambahkan margin horizontal */
+        }
+
+        .yes-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .no-button {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* button hapus */
+        .btn {
+            border-radius: 10px;
+            /* Tambahkan sudut melengkung */
+        }
+
+        .btn-danger {
+            /* Ganti warna latar belakang dan warna teks tombol sesuai kebutuhan */
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-sm {
+            /* Atur ukuran font dan padding tombol sesuai kebutuhan */
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        tr {
+            text-align: center;
+        }
+
+        #tombolTambah {
+            margin-bottom: 10px;
+        }
+
+        .alert {
+            margin-bottom: 10px;
+        }
+
+
+        /* tambah data */
+        .form-input {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -54,7 +185,8 @@
                             <ul class='dropdown-menu'>
                                 {{-- <li class='settings'><a href='#settings'><i class='fa fa-lg fa-gear'></i> Settings</a></li> --}}
                                 <li class='settings'><a href='{{ route('logout') }}'><i
-                                            class='fa fa-lg fa-sign-out'></i> Logout</a></li>
+                                            class='fas fa-sign-out-alt fa-lg'></i> Logout</a></li>
+
                             </ul>
                         </li>
                     </ul>
@@ -67,13 +199,15 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <h2>Data Parkir</h2>
+                            <p>Sisa Jumlah Parkir Motor: <span id="sisaParkirMotor"></span></p>
+                            <p>Sisa Jumlah Parkir Mobil: <span id="sisaParkirMobil"></span></p>
                             <hr />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-xs-12 js-content">
                             <div class="docs-table">
-                                <button id="tombolTambah">Tambah</button>
+                                <button class="btn btn-primary btn-lg" id="tombolTambah">Tambah</button>
                                 {{-- <button id="tombolCek">cek</button> --}}
 
                                 @if (session('success'))
@@ -93,24 +227,31 @@
                                     data-search="true" data-striped="true">
                                     <thead>
                                         <tr>
-                                            <th data-field="Type">Plat Nomor</th>
-                                            <th data-field="Name">Jenis Kendaraan</th>
-                                            <th data-field="Description">Admin</th>
-                                            <th data-field="">Waktu Masuk</th>
-                                            <th data-field="aksi">Aksi</th>
+                                            <th data-field="No">No</th>
+                                            <th data-field="Plat Nomor">Plat Nomor</th>
+                                            <th data-field="Jenis Kendaraan">Jenis Kendaraan</th>
+                                            <th data-field="Admin">Admin</th>
+                                            <th data-field="Waktu Masuk">Waktu Masuk</th>
+                                            <th data-field="Aksi">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($parkir as $item)
                                             <tr>
+                                                <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->plat_nomor }}</td>
                                                 <td>{{ $item->jenis_kendaraan->jenis }}</td>
                                                 <td>{{ $item->admin->nama }}</td>
                                                 <td>{{ $item->created_at->setTimezone('Asia/Jakarta')->format('d-m-Y H:i:s') }}
                                                     WIB</td>
                                                 <td>
-                                                    <p role="button" onclick="showModal('{{ $item->id }}')">cek</p>
+                                                    <div
+                                                        style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                                                        <button class="btn btn-success btn-sm"
+                                                            onclick="showModal('{{ $item->id }}')">CEK</button>
+                                                    </div>
                                                 </td>
+
                                             </tr>
                                             <div id="modalCek-{{ $item->id }}" class="modal">
                                                 <div class="modal-content">
@@ -118,25 +259,30 @@
                                                         onclick="hideModal('{{ $item->id }}')">&times;</span>
                                                     <h2>Konfirmasi</h2>
                                                     <p>Apakah Anda yakin ingin menghapus data parkir ini?</p>
-                                                    <a href="{{ route('hapusParkir', $item->id) }}">Iya</a>
-                                                    {{-- <button onclick="hapusData('{{ $item->id }}')">Iya</button> --}}
-                                                    <button onclick="hideModal('{{ $item->id }}')">Tidak</button>
+                                                    <div class="button-container">
+                                                        <button class="yes-button"
+                                                            onclick="window.location.href='{{ route('hapusParkir', $item->id) }}'">Iya</button>
+                                                        <button class="no-button"
+                                                            onclick="hideModal('{{ $item->id }}')">Tidak</button>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         @endforeach
                                     </tbody>
+
                                 </table>
                                 {{-- <span id="sisaParkirMotor">Sisa Jumlah Parkir Motor: </span><br>
 				<span id="sisaParkirMobil">Sisa Jumlah Parkir Mobil: </span><br> --}}
 
                                 <!-- Tampilan untuk menampilkan sisa jumlah parkir -->
-                                @if (session('sisaParkirMotor'))
+                                {{-- @if (session('sisaParkirMotor'))
                                     <p>Sisa Jumlah Parkir Motor: {{ session('sisaParkirMotor') }}</p>
                                 @endif
 
                                 @if (session('sisaParkirMobil'))
                                     <p>Sisa Jumlah Parkir Mobil: {{ session('sisaParkirMobil') }}</p>
-                                @endif
+                                @endif --}}
 
                             </div>
                         </div>
@@ -151,25 +297,32 @@
     <div id="modalTambah" class="modal">
         <div class="modal-content">
             <span class="close" onclick="hideModal1()">&times;</span>
-            <form action="{{ route('tambahParkir') }}" method="POST">
+            <form action="{{ route('tambahParkir') }}" method="POST" class="form-container">
                 @csrf
                 <!-- Tambahkan elemen input atau field form yang diinginkan -->
-                <label for="plat_nomor">Plat Nomor:</label>
-                <input type="text" id="plat_nomor" name="plat_nomor" required><br><br>
+                <div class="form-group">
+                    <label for="plat_nomor">Plat Nomor:</label>
+                    <input type="text" id="plat_nomor" name="plat_nomor" placeholder="Masukkan Plat Nomor Kendaraan"
+                        autofocus required class="form-input rounded">
+                </div>
 
-                <label for="jenis_kendaraan">Jenis Kendaraan:</label>
-                <select id="jenis_kendaraan" name="jenis_kendaraan" required>
-                    <option disabled value>Pilih Jenis Kendaraan</option>
-                    @foreach ($jenis_kendaraan as $item)
-                        <option value="{{ $item->id }}">{{ $item->jenis }}</option>
-                    @endforeach
+                <div class="form-group">
+                    <label for="jenis_kendaraan">Jenis Kendaraan:</label>
+                    <select id="jenis_kendaraan" name="jenis_kendaraan" required class="form-input rounded">
+                        <option disabled value>Pilih Jenis Kendaraan</option>
+                        @foreach ($jenis_kendaraan as $item)
+                            <option value="{{ $item->id }}">{{ $item->jenis }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                </select><br><br>
-
-                <input type="submit" value="Simpan">
+                <div class="button-container">
+                    <input class="btn btn-primary btn-lg rounded" type="submit" value="Simpan">
+                </div>
             </form>
-
         </div>
+
+
     </div>
 
 

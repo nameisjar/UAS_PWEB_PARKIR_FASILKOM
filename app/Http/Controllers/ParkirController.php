@@ -22,11 +22,11 @@ class ParkirController extends Controller
         $jumlahParkirMotor = Parkir::where('id_jenis_kendaraan', 1)->count();
         $jumlahParkirMobil = Parkir::where('id_jenis_kendaraan', 2)->count();
     
-        if ($jenisKendaraan == 1 && $jumlahParkirMotor >= 5) {
+        if ($jenisKendaraan == 1 && $jumlahParkirMotor >= 100) {
             return redirect()->back()->with('error', 'Batas jumlah parkir motor telah tercapai.');
         }
     
-        if ($jenisKendaraan == 2 && $jumlahParkirMobil >= 5) {
+        if ($jenisKendaraan == 2 && $jumlahParkirMobil >= 20) {
             return redirect()->back()->with('error', 'Batas jumlah parkir mobil telah tercapai.');
         }
     
@@ -43,8 +43,8 @@ class ParkirController extends Controller
         $parkir->save();
     
         // Menghitung sisa jumlah parkir untuk setiap jenis kendaraan
-        $sisaParkirMotor = 5 - $jumlahParkirMotor;
-        $sisaParkirMobil = 5 - $jumlahParkirMobil;
+        $sisaParkirMotor = 100 - $jumlahParkirMotor;
+        $sisaParkirMobil = 20 - $jumlahParkirMobil;
     
         return redirect()->back()->with('success', 'Data parkir berhasil ditambahkan.')
                                   ->with('sisaParkirMotor', $sisaParkirMotor)
@@ -71,8 +71,8 @@ class ParkirController extends Controller
     $jumlahParkirMotor = Parkir::where('id_jenis_kendaraan', 1)->count();
     $jumlahParkirMobil = Parkir::where('id_jenis_kendaraan', 2)->count();
 
-    $sisaParkirMotor = 5 - $jumlahParkirMotor;
-    $sisaParkirMobil = 5 - $jumlahParkirMobil;
+    $sisaParkirMotor = 100 - $jumlahParkirMotor;
+    $sisaParkirMobil = 20 - $jumlahParkirMobil;
 
     $data = [
         'sisaParkirMotor' => $sisaParkirMotor,
