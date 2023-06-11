@@ -9,7 +9,7 @@ class AkunController extends Controller
 {
     public function login(Request $request){
         if (Auth::guard('admin')->attempt(['email'=>$request->email, 'password'=>$request->password])){
-            return redirect('/');
+            return redirect('/parkir');
         }
         return redirect()->back();
     }

@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/login', function () {
+Route::get('/', function () {
     return view('login');
 });
 
@@ -27,8 +27,8 @@ Route::get('/logout', [App\Http\Controllers\AkunController::class,'logout']) ->n
 Route::middleware(['auth:admin'])->group(function () {
    
 
-    Route::get('/', [App\Http\Controllers\ParkirController::class,'showTambahParkir']) ->name('showTambahParkir');
-    Route::post('/', [App\Http\Controllers\ParkirController::class,'tambahParkir']) ->name('tambahParkir');
+    Route::get('/parkir', [App\Http\Controllers\ParkirController::class,'showTambahParkir']) ->name('showTambahParkir');
+    Route::post('/parkir', [App\Http\Controllers\ParkirController::class,'tambahParkir']) ->name('tambahParkir');
     
     Route::get('/get-sisa-parkir', [App\Http\Controllers\ParkirController::class,'getSisaParkir'])->name('getSisaParkir');
     
