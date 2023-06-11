@@ -21,23 +21,23 @@ use Illuminate\Support\Facades\Route;
 //     return view('login');
 // });
 
-Route::get('/', [App\Http\Controllers\AkunController::class,'index']) ->name('login_index');
-Route::post('/login', [App\Http\Controllers\AkunController::class,'login']) ->name('login');
-Route::get('/logout', [App\Http\Controllers\AkunController::class,'logout']) ->name('logout');
+
+
+Route::post('/login', [App\Http\Controllers\AkunController::class, 'login'])->name('login');
+Route::get('/logout', [App\Http\Controllers\AkunController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth:admin'])->group(function () {
-   
 
-    Route::get('/parkir', [App\Http\Controllers\ParkirController::class,'showTambahParkir']) ->name('showTambahParkir');
-    Route::post('/parkir', [App\Http\Controllers\ParkirController::class,'tambahParkir']) ->name('tambahParkir');
-    
-    Route::get('/get-sisa-parkir', [App\Http\Controllers\ParkirController::class,'getSisaParkir'])->name('getSisaParkir');
-    
-    
-    Route::get('/hapusParkir/{id}', [App\Http\Controllers\ParkirController::class,'hapusParkir'])->name('hapusParkir');
 
+    Route::get('/parkir', [App\Http\Controllers\ParkirController::class, 'showTambahParkir'])->name('showTambahParkir');
+    Route::post('/parkir', [App\Http\Controllers\ParkirController::class, 'tambahParkir'])->name('tambahParkir');
+
+    Route::get('/get-sisa-parkir', [App\Http\Controllers\ParkirController::class, 'getSisaParkir'])->name('getSisaParkir');
+
+
+    Route::get('/hapusParkir/{id}', [App\Http\Controllers\ParkirController::class, 'hapusParkir'])->name('hapusParkir');
 });
+Route::middleware(['guest:admin'])->group(function () {
 
-
-
-
+    Route::get('/', [App\Http\Controllers\AkunController::class, 'index'])->name('login_index');
+});
