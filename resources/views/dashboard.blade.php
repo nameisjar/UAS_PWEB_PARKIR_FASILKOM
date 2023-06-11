@@ -1,4 +1,5 @@
 {{-- @extends('layouts.header') --}}
+{{-- @dd(auth()->check()) --}}
 <!DOCTYPE html>
 <html lang="en" >
 <head>
@@ -7,11 +8,14 @@
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css'>
 <link rel='stylesheet' href='https://s3-us-west-2.amazonaws.com/s.cdpn.io/4579/bootstrap-table.css'><link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 </head>
 <body>
+	
 <!-- partial:index.partial.html -->
 <body>
+	
   <div id='wrapper'>
 		<nav class='navbar navbar-inverse navbar-fixed-top' role='navigation'>
 			<div class='navbar-header'>
@@ -35,10 +39,11 @@
 				</ul>
 				<ul class='nav navbar-nav navbar-right navbar-user'>
 					<li class='dropdown user-dropdown'>
-							<a href='#' class='dropdown-toggle' data-toggle='dropdown'><span class="js-user-name">Ryan Gill</span><b class='caret'></b></a>
+							
+							<a href='#' class='dropdown-toggle' data-toggle='dropdown'><span class="js-user-name">{{ auth()->user()->nama }}</span><b class='caret'></b></a>
 							<ul class='dropdown-menu'>
 									{{-- <li class='settings'><a href='#settings'><i class='fa fa-lg fa-gear'></i> Settings</a></li> --}}
-									<li class='settings'><a href='#settings'><i class='fa fa-lg fa-gear'></i> Logout</a></li>
+									<li class='settings'><a href='/logout'><i class='fa fa-lg fa-gear'></i> Logout</a></li>
 							</ul>
 					</li>
 				</ul>
@@ -58,6 +63,7 @@
 					<div class="col-lg-12 col-md-12 col-xs-12 js-content">
             <div class="docs-table">
 				<button id="tombolTambah">Tambah</button>
+				{{-- <button id="tombolCek">cek</button> --}}
 
 				@if(session('success'))
 				<div class="alert alert-success">
@@ -89,12 +95,33 @@
 								<td>{{ $item->jenis_kendaraan->jenis }}</td>
 								<td>{{ $item->admin->nama }}</td>
 								<td>{{ $item->created_at->setTimezone('Asia/Jakarta')->format('d-m-Y H:i:s') }} WIB</td>
-
-
+								<td><p role="button" onclick="showModal('{{ $item->id }}')">cek</p></td>
 							</tr>
+							<div id="modalCek-{{ $item->id }}" class="modal">
+								<div class="modal-content">
+								  <span class="close" onclick="hideModal('{{ $item->id }}')">&times;</span>
+								  <h2>Konfirmasi</h2>
+								  <p>Apakah Anda yakin ingin menghapus data parkir ini?</p>
+								  <a href="{{ route('hapusParkir', $item->id) }}">Iya</a>
+								  {{-- <button onclick="hapusData('{{ $item->id }}')">Iya</button> --}}
+								  <button onclick="hideModal('{{ $item->id }}')">Tidak</button>
+								</div>
+							</div>
+						
 						@endforeach
 					</tbody>
 				</table>
+				{{-- <span id="sisaParkirMotor">Sisa Jumlah Parkir Motor: </span><br>
+				<span id="sisaParkirMobil">Sisa Jumlah Parkir Mobil: </span><br> --}}
+
+				<!-- Tampilan untuk menampilkan sisa jumlah parkir -->
+				@if(session('sisaParkirMotor'))
+				<p>Sisa Jumlah Parkir Motor: {{ session('sisaParkirMotor') }}</p>
+				@endif
+
+				@if(session('sisaParkirMobil'))
+				<p>Sisa Jumlah Parkir Mobil: {{ session('sisaParkirMobil') }}</p>
+				@endif
 				
             </div>
 					</div>
@@ -108,7 +135,7 @@
 
 <div id="modalTambah" class="modal">
 	<div class="modal-content">
-	  <span class="close">&times;</span>
+	  <span class="close" onclick="hideModal1()">&times;</span>
 	  <form action="{{ route('tambahParkir') }}" method="POST">
 		@csrf
 		<!-- Tambahkan elemen input atau field form yang diinginkan -->
@@ -126,10 +153,38 @@
 
 		<input type="submit" value="Simpan">
 	  </form>
+	  
 	</div>
-  </div>
+</div>
+
+
+
 <!-- partial -->
 <script>
+	 // Fungsi untuk mengambil dan memperbarui sisa jumlah parkir
+	//  function updateSisaParkir() {
+    //     $.ajax({
+    //         url: '{{ route('getSisaParkir') }}',
+    //         type: 'GET',
+    //         dataType: 'json',
+    //         success: function(response) {
+    //             // Memperbarui tampilan sisa jumlah parkir motor
+    //             $('#sisaParkirMotor').text('Sisa Jumlah Parkir Motor: ' + response.sisaParkirMotor);
+    //             // Memperbarui tampilan sisa jumlah parkir mobil
+    //             $('#sisaParkirMobil').text('Sisa Jumlah Parkir Mobil: ' + response.sisaParkirMobil);
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error(error);
+    //         }
+    //     });
+    // }
+
+
+    // // Panggil fungsi updateSisaParkir saat halaman selesai dimuat
+    // $(document).ready(function() {
+    //     updateSisaParkir();
+    // });
+	
 
     var tombolTambah = document.getElementById("tombolTambah");
     var modal = document.getElementById("modalTambah");
@@ -153,6 +208,39 @@
         modal.style.display = "none";
       }
     }
+	function hideModal1() {
+    modal.style.display = "none";
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+	function showModal(itemId) {
+    var modal = document.getElementById('modalCek-' + itemId);
+    modal.style.display = 'block';
+  }
+
+  function hideModal(itemId) {
+    var modal = document.getElementById('modalCek-' + itemId);
+    modal.style.display = 'none';
+  }
+
+  function hapusData(itemId) {
+    // Lakukan tindakan penghapusan data sesuai dengan itemId yang dipilih
+    console.log('Hapus data dengan ID: ' + itemId);
+    // Anda dapat mengirim permintaan AJAX ke server untuk menghapus data atau menggunakan metode yang sesuai dengan aplikasi Anda
+    hideModal(itemId); // Sembunyikan modal setelah menghapus data
+  }
+
+	
   </script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/4579/bootstrap.min.js'></script>
