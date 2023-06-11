@@ -17,10 +17,11 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/', function () {
-    return view('login');
-});
+// Route::get('/', function () {
+//     return view('login');
+// });
 
+Route::get('/', [App\Http\Controllers\AkunController::class,'index']) ->name('login_index');
 Route::post('/login', [App\Http\Controllers\AkunController::class,'login']) ->name('login');
 Route::get('/logout', [App\Http\Controllers\AkunController::class,'logout']) ->name('logout');
 

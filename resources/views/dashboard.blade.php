@@ -43,7 +43,7 @@
 							<a href='#' class='dropdown-toggle' data-toggle='dropdown'><span class="js-user-name">{{ auth()->user()->nama }}</span><b class='caret'></b></a>
 							<ul class='dropdown-menu'>
 									{{-- <li class='settings'><a href='#settings'><i class='fa fa-lg fa-gear'></i> Settings</a></li> --}}
-									<li class='settings'><a href='/logout'><i class='fa fa-lg fa-gear'></i> Logout</a></li>
+									<li class='settings'><a href='{{ route('logout') }}'><i class='fa fa-lg fa-sign-out'></i> Logout</a></li>
 							</ul>
 					</li>
 				</ul>

@@ -18,6 +18,10 @@ class AkunController extends Controller
         if (Auth::guard('admin')->check()){
             Auth::guard('admin')->logout();
         }
-        return redirect('/login');
+        return redirect('/');
+    }
+    public function index(){
+     
+        return view('login');
     }
 }
